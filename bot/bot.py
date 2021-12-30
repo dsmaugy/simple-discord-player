@@ -1,7 +1,6 @@
 from discord.ext import commands
 from media import AudioContextManager
 from mediadownload import YTManager
-import discord
 import logging
 
 logger = logging.getLogger("bot")

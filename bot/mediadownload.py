@@ -1,11 +1,9 @@
-from dotenv import load_dotenv 
 from pyyoutube import Api as YTApi
 import youtube_dl
 import asyncio
 import os
 import logging
 
-load_dotenv()
 logger = logging.getLogger("mediadownload")
 
 ytdl = youtube_dl.YoutubeDL(params={

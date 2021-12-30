@@ -1,11 +1,12 @@
+from dotenv import load_dotenv
+load_dotenv() # load all environment variables first for YouTube API key
+
 from bot import MusicCog
 from discord.ext import commands
-from dotenv import load_dotenv
 import os
 import logging
 
 if __name__ == "__main__":
-    load_dotenv()
     logging.basicConfig(level=logging.INFO)
 
     bot = commands.Bot(command_prefix="-")
