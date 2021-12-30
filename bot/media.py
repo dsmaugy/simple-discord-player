@@ -34,7 +34,7 @@ class AudioContext():
             await self._vc.disconnect()
 
     def done_playing(self, e):
-        logger.warn(f"Done playing {self._now_playing.name}")
+        logger.info(f"Done playing {self._now_playing.name}")
         if e:
             logger.error(f"Player error: {e}")
 

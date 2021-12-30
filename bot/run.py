@@ -6,7 +6,7 @@ import logging
 
 if __name__ == "__main__":
     load_dotenv()
-    logging.basicConfig(level=logging.WARN)
+    logging.basicConfig(level=logging.INFO)
 
     bot = commands.Bot(command_prefix="-")
     bot.add_cog(MusicCog(bot))

@@ -17,6 +17,7 @@ class MusicCog(commands.Cog):
         vc = ctx.author.voice.channel
         audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
         if vc:
+            logger.warn(f"channel: {vc}")
             await audio_ctx.join_channel(vc)
         else:
             await ctx.send("User not in voice channel!", delete_after=DELETE_TIME)
@@ -80,24 +81,29 @@ class MusicCog(commands.Cog):
 
     @commands.command(aliases=["p"])
     async def play(self, ctx: commands.Context, *args: (str)):
-        await self.join_user_channel(ctx)
         audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
-        np = audio_ctx.get_now_playing()
-        media_name: str
 
-        if len(args) == 1 and args[0].startswith("https://www.youtube.com/watch"):
-            # stream this direct link
-            data = await YTManager.from_url(args[0], loop=self.bot.loop)
-            audio_ctx.queue_song(data[0], data[1], data[2])
-            media_name = data[1]
-        else:
-            # search the video on YouTube first
-            pass
+        # join the user channel if not currently in one:
+        if not audio_ctx._vc:
+            await self.join_user_channel(ctx)
+
+        np = audio_ctx.get_now_playing()
+        yt_url = args[0]
+
+        if not args[0].startswith("https://www.youtube.com/watch"):
+            # NOT a direct URL (search for the vid on YouTube)
+            yt_url = YTManager.search_youtube(" ".join(args))
+            if not yt_url:
+                await ctx.send("Invalid query", delete_after=DELETE_TIME)
+                return
+
+        data = await YTManager.from_url(yt_url, loop=self.bot.loop)
+        audio_ctx.queue_song(data[0], data[1], data[2])
 
         if not np:
-            await ctx.send(f"Playing {media_name}", delete_after=DELETE_TIME)
+            await ctx.send(f"Playing {data[1]}", delete_after=DELETE_TIME)
         else:
-            await ctx.send(f"Queued {media_name}", delete_after=DELETE_TIME)
+            await ctx.send(f"Queued {data[1]}", delete_after=DELETE_TIME)
 
         audio_ctx.play_from_queue()
 
