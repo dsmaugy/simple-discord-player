@@ -22,14 +22,14 @@ class AdminCommands(commands.Cog):
     async def blacklist(self, ctx: commands.Context, user: str):
         id = int(re.search(r"[0-9]+", user)[0])
         global_blacklist[id] = True
-        await ctx.send(f"Adding user ID {id} to blacklist")
+        await ctx.send(f"Adding user ID {id} to blacklist", delete_after=DELETE_TIME)
 
     @commands.command(aliases=["ub"])
     async def unblacklist(self, ctx: commands.Context, user: str):
         id = int(re.search(r"[0-9]+", user)[0])
         if id in global_blacklist:
             global_blacklist[id] = False
-            await ctx.send(f"Removing user ID {id} from blacklist")
+            await ctx.send(f"Removing user ID {id} from blacklist", delete_after=DELETE_TIME)
 
 class MusicCog(commands.Cog):
 
