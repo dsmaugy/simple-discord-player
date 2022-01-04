@@ -2,15 +2,45 @@ from discord.ext import commands
 from media import AudioContextManager
 from mediadownload import YTManager
 import logging
+import re
 
 logger = logging.getLogger("bot")
 DELETE_TIME = 30 # number of seconds to delete a message after sending
+
+global_blacklist = {}
+
+class AdminCommands(commands.Cog):
+
+    def __init__(self, bot: commands.Bot):
+        self.bot: commands.Bot = bot    
+
+    # only I can access these commands ;)
+    def cog_check(self, ctx: commands.Context):
+        return ctx.author.id == 122886595077472257
+
+    @commands.command(aliases=["b"])
+    async def blacklist(self, ctx: commands.Context, user: str):
+        id = int(re.search(r"[0-9]+", user)[0])
+        global_blacklist[id] = True
+        await ctx.send(f"Adding user ID {id} to blacklist", delete_after=DELETE_TIME)
+
+    @commands.command(aliases=["ub"])
+    async def unblacklist(self, ctx: commands.Context, user: str):
+        id = int(re.search(r"[0-9]+", user)[0])
+        if id in global_blacklist:
+            global_blacklist[id] = False
+            await ctx.send(f"Removing user ID {id} from blacklist", delete_after=DELETE_TIME)
 
 class MusicCog(commands.Cog):
 
     def __init__(self, bot: commands.Bot):
         self.bot: commands.Bot = bot
         self._audio_manager: AudioContextManager = AudioContextManager()
+
+    def cog_check(self, ctx: commands.Context):
+        if ctx.author.id in global_blacklist:
+            return not global_blacklist[ctx.author.id]
+        return True
 
     async def join_user_channel(self, ctx: commands.Context):
         vc = ctx.author.voice.channel

@@ -1,12 +1,13 @@
 from pyyoutube import Api as YTApi
-import youtube_dl
+from yt_dlp import YoutubeDL
 import asyncio
 import os
 import logging
 
 logger = logging.getLogger("mediadownload")
 
-ytdl = youtube_dl.YoutubeDL(params={
+# Use YTDLP fork of YTDL to work with age restricted videos
+ytdl = YoutubeDL(params={
     'format': 'bestaudio/best',
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
     'restrictfilenames': True,
