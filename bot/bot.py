@@ -109,7 +109,7 @@ class MusicCog(commands.Cog):
         await ctx.send(f"Is Playing: {audio_ctx._vc.is_playing()}. Is Paused: {audio_ctx._vc.is_paused()}", delete_after=DELETE_TIME)
 
     @commands.command(aliases=["p"])
-    async def play(self, ctx: commands.Context, *args: (str)):
+    async def play(self, ctx: commands.Context, *, args: str):
         audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
 
         # join the user channel if not currently in one:
@@ -117,11 +117,11 @@ class MusicCog(commands.Cog):
             await self.join_user_channel(ctx)
 
         np = audio_ctx.get_now_playing()
-        yt_url = args[0]
+        yt_url = args
 
-        if not args[0].startswith("https://www.youtube.com/watch"):
+        if not args.startswith("https://www.youtube.com/watch"):
             # NOT a direct URL (search for the vid on YouTube)
-            yt_url = YTManager.search_youtube(" ".join(args))
+            yt_url = YTManager.search_youtube(args)
             if not yt_url:
                 await ctx.send("Invalid query", delete_after=DELETE_TIME)
                 return
