@@ -17,5 +17,7 @@ jobs:
     - name: Build and push the Docker image
       run: |
         echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-        docker build . --file Dockerfile --tag ghcr.io/dsmaugy/skeleton-listener/bot:latest
+        docker build . --file Dockerfile --tag ghcr.io/dsmaugy/skeleton-listener/bot:latest \ 
+          --build-arg DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} \
+          --build-arg YOUTUBE_API=${{ secrets.YOUTUBE_API }}
         docker push ghcr.io/dsmaugy/skeleton-listener/bot:latest
