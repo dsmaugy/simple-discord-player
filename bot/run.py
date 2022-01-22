@@ -8,7 +8,7 @@ import os
 import logging
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s-[%(levelname)s]-%(name)s: %(message)s", datefmt="%d-%b-%y %H:%M:%S")
 
     bot = commands.Bot(command_prefix="-")
     bot.add_cog(MusicCog(bot))
