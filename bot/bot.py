@@ -19,13 +19,13 @@ class AdminCommands(commands.Cog):
         return ctx.author.id == 122886595077472257
 
     @commands.command(aliases=["b"])
-    async def blacklist(self, ctx: commands.Context, user: str):
+    async def ban(self, ctx: commands.Context, user: str):
         id = int(re.search(r"[0-9]+", user)[0])
         global_blacklist[id] = True
         await ctx.send(f"Adding user ID {id} to blacklist", delete_after=DELETE_TIME)
 
     @commands.command(aliases=["ub"])
-    async def unblacklist(self, ctx: commands.Context, user: str):
+    async def unban(self, ctx: commands.Context, user: str):
         id = int(re.search(r"[0-9]+", user)[0])
         if id in global_blacklist:
             global_blacklist[id] = False
