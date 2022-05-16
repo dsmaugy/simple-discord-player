@@ -22,7 +22,7 @@ Supported commands:
 -queue, -q
 -now_playing, -np
 -skip, -s
--play, -p | <query> | <youtube_url>
+-play, -p | <query> | <youtube_url> | <soundcloud_url>
 -volume, -v | <[0.0, 2.0]>
 
 # Debugging
