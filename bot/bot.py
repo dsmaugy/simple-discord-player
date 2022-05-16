@@ -1,6 +1,7 @@
 from discord.ext import commands
 from media import AudioContextManager
 from mediadownload import YTManager
+from mediadownload import SCManager
 import logging
 import re
 
@@ -117,16 +118,25 @@ class MusicCog(commands.Cog):
             await self.join_user_channel(ctx)
 
         np = audio_ctx.get_now_playing()
-        yt_url = args
+        data_url = args
 
-        if not args.startswith("https://www.youtube.com/watch"):
+        # order of checking:
+        # 1. Direct soundcloud link
+        # 2. Direct YouTube link
+        # 3. Indirect Youtube search
+        if args.startswith("https://soundcloud.com"):
+            data = await SCManager.from_url(data_url, loop=self.bot.loop)
+        elif args.startswith("https://www.youtube.com/watch"):
+            data = await YTManager.from_url(data_url, loop=self.bot.loop)
+        else:
             # NOT a direct URL (search for the vid on YouTube)
-            yt_url = YTManager.search_youtube(args)
-            if not yt_url:
+            data_url = YTManager.search_youtube(args)
+            if not data_url:
                 await ctx.send("Invalid query", delete_after=DELETE_TIME)
                 return
 
-        data = await YTManager.from_url(yt_url, loop=self.bot.loop)
+            data = await YTManager.from_url(data_url, loop=self.bot.loop)
+
         audio_ctx.queue_song(data[0], data[1], data[2])
 
         if not np:

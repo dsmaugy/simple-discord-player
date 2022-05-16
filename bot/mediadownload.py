@@ -3,6 +3,8 @@ from yt_dlp import YoutubeDL
 import asyncio
 import os
 import logging
+from sclib import SoundcloudAPI
+
 
 logger = logging.getLogger("mediadownload")
 
@@ -22,6 +24,7 @@ ytdl = YoutubeDL(params={
 })
 
 ytapi = YTApi(api_key=os.environ["YOUTUBE_API"])
+scapi = SoundcloudAPI() 
 
 class YTManager():
 
@@ -55,3 +58,20 @@ class YTManager():
             return f"https://www.youtube.com/watch?v={r.items[0].id.videoId}"
         else:
             return None
+
+class SCManager():
+
+    @classmethod
+    async def from_url(cls, url, loop=None) -> tuple:
+        '''
+        Given a URL to a SoundCloud song, returns a URL to the mp3, the title, and the duration of the track in a tuple. 
+        '''
+
+        loop = loop or asyncio.get_event_loop()
+        data = await loop.run_in_executor(None, lambda: scapi.resolve(url))
+        
+        total_sec = data.duration / 1000
+
+        mins = int(total_sec // 60)
+        sec = int(total_sec % 60)
+        return (data.get_stream_url(), f"{data.title} - {data.artist}", f"{mins}:{sec:02d}")

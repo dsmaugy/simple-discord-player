@@ -51,6 +51,7 @@ class AudioContext():
             self._vc.play(self._now_playing.source, after=self.done_playing)
 
     def queue_song(self, source: str, name: str, duration: str):
+        logger.info(f"Queueing {name} from {source}")
         self._queue.append(BotAudioSource(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(source), volume=0.5), name, duration))
 
     def pause(self):
