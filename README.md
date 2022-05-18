@@ -24,6 +24,7 @@ Supported commands:
 -skip, -s
 -play, -p | <query> | <youtube_url> | <soundcloud_url>
 -volume, -v | <[0.0, 2.0]>
+-repeat, -rep
 
 # Debugging
 -status

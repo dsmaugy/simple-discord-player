@@ -5,10 +5,11 @@ logger = logging.getLogger("mediactrl")
 
 
 class BotAudioSource():
-    def __init__(self, source: discord.PCMVolumeTransformer, name: str, duration: str):
-        self.source = source
+    def __init__(self, source_str: str, name: str, duration: str):
         self.name = name
         self.duration = duration
+        self.source_str = source_str
+        self.source: discord.PCMVolumeTransformer = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(source_str))
 
     def __repr__(self) -> str:
         return self.name
@@ -20,6 +21,8 @@ class AudioContext():
         self._vc: discord.VoiceClient = voice_client
 
         self._stop_flag: bool = False
+        self._repeat_flag: bool = False
+        self._skip_flag: bool = False
         
     async def join_channel(self, channel: discord.VoiceChannel):
         if not self._vc or not self._vc.is_connected():
@@ -37,12 +40,18 @@ class AudioContext():
         if e:
             logger.error(f"Player error: {e}")
 
+        if self._repeat_flag and not self._stop_flag and not self._skip_flag:
+            logger.info(f"Repeating {self._now_playing.name}")
+            bas: BotAudioSource = BotAudioSource(self._now_playing.source_str, self._now_playing.name, self._now_playing.duration)
+            self._queue.insert(0, bas)
+
         self._now_playing = None
 
         if not self._stop_flag:
             self.play_from_queue()
         else:
             self._stop_flag = False
+        self._skip_flag = False
 
 
     def play_from_queue(self):
@@ -52,7 +61,7 @@ class AudioContext():
 
     def queue_song(self, source: str, name: str, duration: str):
         logger.info(f"Queueing {name} from {source}")
-        self._queue.append(BotAudioSource(discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(source), volume=0.5), name, duration))
+        self._queue.append(BotAudioSource(source, name, duration))
 
     def pause(self):
         if self._vc and self._vc.is_playing:
@@ -63,10 +72,15 @@ class AudioContext():
             self._vc.resume()
         
     def skip(self):
+        self._skip_flag = True
         if self._vc.is_playing() or self._vc.is_paused():
             self._vc.stop()
         else:
             self.play_from_queue()
+
+
+    def repeat_toggle(self):
+        self._repeat_flag = not self._repeat_flag
 
     def stop(self):
         self._stop_flag = True

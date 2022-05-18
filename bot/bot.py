@@ -107,7 +107,7 @@ class MusicCog(commands.Cog):
     @commands.command()
     async def status(self, ctx: commands.Context):
         audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
-        await ctx.send(f"Is Playing: {audio_ctx._vc.is_playing()}. Is Paused: {audio_ctx._vc.is_paused()}", delete_after=DELETE_TIME)
+        await ctx.send(f"Is Playing: {audio_ctx._vc.is_playing()}. Is Paused: {audio_ctx._vc.is_paused()}. Is Repeat: {audio_ctx._repeat_flag}", delete_after=DELETE_TIME)
 
     @commands.command(aliases=["p"])
     async def play(self, ctx: commands.Context, *, args: str):
@@ -161,3 +161,11 @@ class MusicCog(commands.Cog):
                 await ctx.send("Not a valid number", delete_after=DELETE_TIME)
         else:
             await ctx.send("Nothing currently playing", delete_after=DELETE_TIME)
+
+    # loops current track, skip command will override this
+    @commands.command(aliases=["rep"])
+    async def repeat(self, ctx: commands.Context):
+        audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
+        audio_ctx.repeat_toggle()
+        await ctx.send(f"Setting repeat to {audio_ctx._repeat_flag}", delete_after=DELETE_TIME)
+
