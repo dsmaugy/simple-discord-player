@@ -1,5 +1,6 @@
 import discord
 import logging
+import os
 
 logger = logging.getLogger("mediactrl")
 
@@ -44,6 +45,9 @@ class AudioContext():
             logger.info(f"Repeating {self._now_playing.name}")
             bas: BotAudioSource = BotAudioSource(self._now_playing.source_str, self._now_playing.name, self._now_playing.duration)
             self._queue.insert(0, bas)
+
+        if self._now_playing.source_str.startswith("/tmp/"):
+            os.remove(self._now_playing.source_str)
 
         self._now_playing = None
 

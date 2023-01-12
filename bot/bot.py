@@ -139,10 +139,7 @@ class MusicCog(commands.Cog):
 
         audio_ctx.queue_song(data[0], data[1], data[2])
 
-        if not np:
-            await ctx.send(f"Playing {data[1]}", delete_after=DELETE_TIME)
-        else:
-            await ctx.send(f"Queued {data[1]}", delete_after=DELETE_TIME)
+        await ctx.send(f"Queued {data[1]}", delete_after=DELETE_TIME)
 
         audio_ctx.play_from_queue()
 

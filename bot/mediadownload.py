@@ -1,17 +1,19 @@
 from pyyoutube import Api as YTApi
 from yt_dlp import YoutubeDL
+from sclib import SoundcloudAPI
+from datetime import datetime
+
 import asyncio
 import os
 import logging
-from sclib import SoundcloudAPI
+import requests
+
 
 
 logger = logging.getLogger("mediadownload")
 
-# Use YTDLP fork of YTDL to work with age restricted videos
-ytdl = YoutubeDL(params={
-    'format': 'bestaudio/best',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+YTDL_COMMON_PARAMS = {
+    'format': 'm4a/bestaudio/best',
     'restrictfilenames': True,
     'noplaylist': True,
     'nocheckcertificate': True,
@@ -20,8 +22,10 @@ ytdl = YoutubeDL(params={
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
-})
+    'source_address': '0.0.0.0', # bind to ipv4 since ipv6 addresses cause issues sometimes
+}
+# Use YTDLP fork of YTDL to work with age restricted videos
+ytdl_extract = YoutubeDL(params=YTDL_COMMON_PARAMS)
 
 ytapi = YTApi(api_key=os.environ["YOUTUBE_API"])
 scapi = SoundcloudAPI() 
@@ -29,13 +33,13 @@ scapi = SoundcloudAPI()
 class YTManager():
 
     @classmethod
-    async def from_url(cls, url, loop=None) -> tuple:
+    async def from_url(cls, url, loop=None, download=True) -> tuple:
         '''
         Given a URL to a YouTube video, returns a URL to the mp3, the title, and the duration of a video in a tuple. 
         '''
 
         loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=False))
+        data = await loop.run_in_executor(None, lambda: ytdl_extract.extract_info(url, download=False))
         
         if 'entries' in data:
             # take first item from a playlist
@@ -43,7 +47,19 @@ class YTManager():
         
         mins = data['duration'] // 60
         sec = data['duration'] % 60
-        return (data['url'], data['title'], f"{mins}:{sec:02d}")
+
+        if not download:
+            audio_url = data['url']
+        else:
+            ytdl_download_params = YTDL_COMMON_PARAMS.copy()
+            ytdl_download_params['outtmpl'] = f"/tmp/{datetime.now()}-{data['title']}"
+            with YoutubeDL(ytdl_download_params) as ytdl_download:
+                await loop.run_in_executor(None, lambda: ytdl_download.download(url))
+                
+            audio_url = ytdl_download_params['outtmpl']
+ 
+        return (audio_url, data['title'], f"{mins}:{sec:02d}")
+        
 
     @classmethod
     def search_youtube(cls, query) -> str:
