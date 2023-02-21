@@ -58,7 +58,7 @@ class YTManager():
                 
             audio_url = ytdl_download_params['outtmpl']
  
-        return (audio_url, data['title'], f"{mins}:{sec:02d}")
+        return (audio_url['default'], data['title'], f"{mins}:{sec:02d}")
         
 
     @classmethod
