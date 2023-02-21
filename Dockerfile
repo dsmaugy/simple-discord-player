@@ -11,7 +11,7 @@ RUN pip3 install -r requirements.txt
 RUN apt-get update && apt-get install -y libffi-dev ffmpeg curl && rm -rf /var/lib/apt/lists/*
 
 # download latest version of youtube-dl
-RUN curl -o /usr/local/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/download/2023.01.06/yt-dlp 
+RUN curl -o /usr/local/bin/yt-dlp https://github.com/yt-dlp/yt-dlp/releases/download/2023.02.17/yt-dlp 
 RUN chmod a+rx /usr/local/bin/yt-dlp
 
 # set environment variables before running
