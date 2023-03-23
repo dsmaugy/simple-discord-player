@@ -44,13 +44,15 @@ class MusicCog(commands.Cog):
         return True
 
     async def join_user_channel(self, ctx: commands.Context):
-        vc = ctx.author.voice.channel
-        audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
-        if vc:
-            logger.warn(f"channel: {vc}")
-            await audio_ctx.join_channel(vc)
-        else:
+        try:
+            vc = ctx.author.voice.channel
+        except:
             await ctx.send("User not in voice channel!", delete_after=DELETE_TIME)
+            return
+
+        audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
+        logger.warn(f"channel: {vc}")
+        await audio_ctx.join_channel(vc)
 
     @commands.command(aliases=["j"])
     async def join(self, ctx: commands.Context):
@@ -112,12 +114,11 @@ class MusicCog(commands.Cog):
     @commands.command(aliases=["p"])
     async def play(self, ctx: commands.Context, *, args: str):
         audio_ctx = self._audio_manager.get_audio_ctx(ctx.guild.id)
-
+        
         # join the user channel if not currently in one:
         if not audio_ctx._vc:
             await self.join_user_channel(ctx)
 
-        np = audio_ctx.get_now_playing()
         data_url = args
 
         # order of checking:
