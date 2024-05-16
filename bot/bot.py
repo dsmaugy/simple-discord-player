@@ -2,6 +2,7 @@ from discord.ext import commands
 from media import AudioContextManager
 from mediadownload import YTManager
 from mediadownload import SCManager
+from reels import ReelsManager
 import logging
 import re
 
@@ -9,6 +10,7 @@ logger = logging.getLogger("bot")
 DELETE_TIME = 30 # number of seconds to delete a message after sending
 
 global_blacklist = {}
+reels = ReelsManager()
 
 class AdminCommands(commands.Cog):
 
@@ -31,6 +33,23 @@ class AdminCommands(commands.Cog):
         if id in global_blacklist:
             global_blacklist[id] = False
             await ctx.send(f"Removing user ID {id} from blacklist", delete_after=DELETE_TIME)
+
+    @commands.command()
+    async def reel(self, ctx: commands.Context, cmd: str = ""):
+        reel_id = str(ctx.channel.guild.id) + "-" + str(ctx.channel.id)
+        logger.info(f"CMD: {cmd}, on reel ID: {reel_id}")
+        
+        if cmd == "status":
+            await ctx.send(reels.get_status_str(reel_id), delete_after=DELETE_TIME)
+        elif cmd == "on":
+            if reels.add_channel(reel_id, ctx.channel):
+                await ctx.send(f"Adding channel {reel_id} to reels list", delete_after=DELETE_TIME)
+        elif cmd == "off":
+            if reels.remove_channel(reel_id):
+                await ctx.send(f"Removing channel {reel_id} from reels", delete_after=DELETE_TIME)
+
+        # mention_all = AllowedMentions.all()
+        # await ctx.send(f"Edgewood ID: {ctx.guild}, @", allowed_mentions=mention_all, delete_after=5)
 
 class MusicCog(commands.Cog):
 
