@@ -32,6 +32,7 @@ class ReelsManager:
         if reels_id not in self.reels_list:
             entry = Reels(channel)
             self.reels_list[reels_id] = entry
+            logger.info(f"Registering {reels_id} to reels manager")
             self._trigger_send_timer(reels_id)
             return True
         return False
@@ -55,32 +56,40 @@ class ReelsManager:
         else:
             return "Channel reels not configured"
     
-    def set_reel_timeout_mean(self, reels_id: str, new_mean: int) -> bool:
+    def set_reel_timeout_mean(self, reels_id: str, new_mean: float) -> bool:
         if new_mean >= MEAN_LOW and new_mean <= MEAN_HIGH:
             self.reels_list[reels_id].timeout_mean = new_mean
             return True
         return False
     
-    def set_reel_timeout_std(self, reels_id: str, new_std: int) -> bool:
+    def set_reel_timeout_std(self, reels_id: str, new_std: float) -> bool:
         self.reels_list[reels_id].timeout_std = new_std
         return True
     
     def send_reel(self, reels_id: str, loop):
         reel: Reels = self.reels_list[reels_id]
         mention_all = AllowedMentions.all()
-        
+
         logger.info("Sending reel update")
-        asyncio.run_coroutine_threadsafe(reel.channel.send("@everyone REEL UPDATES", allowed_mentions=mention_all), loop)
+        asyncio.run_coroutine_threadsafe(reel.channel.send(f":warning:{reel.channel.name} time:warning:\nSend a pic and/or message of what you're up to!!!\n@everyone", allowed_mentions=mention_all), loop)
         self._trigger_send_timer(reels_id, loop)
 
-    def _trigger_send_timer(self, reels_id: str, loop=None):
+    def force_send(self, reels_id: str):
+        self._trigger_send_timer(reels_id, now=True)
+
+    def _trigger_send_timer(self, reels_id: str, loop=None, now=False):
         reel: Reels = self.reels_list[reels_id]
-        new_timeout = random.gauss(reel.timeout_mean, reel.timeout_std)
+        if now:
+            new_timeout = 0
+        else:
+            new_timeout = random.gauss(reel.timeout_mean, reel.timeout_std)
 
         reel.last_reel = datetime.now()
         logger.info(f"Next reel for {reels_id} is at {reel.last_reel + timedelta(seconds=new_timeout)}")
         loop = asyncio.get_event_loop() if loop is None else loop
-        Timer(new_timeout, self.send_reel, kwargs={'reels_id': reels_id, 'loop': loop}).start()
+        t = Timer(new_timeout, self.send_reel, kwargs={'reels_id': reels_id, 'loop': loop})
+        t.setDaemon(True)
+        t.start()
 
         
 

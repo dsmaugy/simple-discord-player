@@ -20,6 +20,9 @@ class AdminCommands(commands.Cog):
     # only I can access these commands ;)
     def cog_check(self, ctx: commands.Context):
         return ctx.author.id == 122886595077472257
+    
+    def add_reels_from_channel_id(self, reels_id: str, id: int):
+        reels.add_channel(reels_id, self.bot.get_channel(id))
 
     @commands.command(aliases=["b"])
     async def ban(self, ctx: commands.Context, user: str):
@@ -35,7 +38,7 @@ class AdminCommands(commands.Cog):
             await ctx.send(f"Removing user ID {id} from blacklist", delete_after=DELETE_TIME)
 
     @commands.command()
-    async def reel(self, ctx: commands.Context, cmd: str = ""):
+    async def reel(self, ctx: commands.Context, cmd: str = "", val: str = ""):
         reel_id = str(ctx.channel.guild.id) + "-" + str(ctx.channel.id)
         logger.info(f"CMD: {cmd}, on reel ID: {reel_id}")
         
@@ -47,9 +50,25 @@ class AdminCommands(commands.Cog):
         elif cmd == "off":
             if reels.remove_channel(reel_id):
                 await ctx.send(f"Removing channel {reel_id} from reels", delete_after=DELETE_TIME)
+        elif cmd == "std":
+            if val.isnumeric():
+                if reels.set_reel_timeout_mean(reel_id, float(val)):
+                    await ctx.send(f"Succesfully adjusted mean to {float(val)}")
+                else:
+                    await ctx.send(f"Failed to set mean to {float(val)}. Might be out of bounds.")
+            else:
+                await ctx.send("Usage: -reel std [standard deviation value]")
+        elif cmd == "mean":
+            if val.isnumeric():
+                if reels.set_reel_timeout_std(reel_id, float(val)):
+                    await ctx.send(f"Succesfully adjusted standard deviation to {float(val)}")
+            else:
+                await ctx.send("Usage: -reel mean [mean value]")
+        elif cmd == "force":
+            reels.force_send(reel_id)
+        else:
+            await ctx.send("Usage: -reel (status|on|off|force|std|mean) [value?]\nUse std/mean options to adjust reel frequency")
 
-        # mention_all = AllowedMentions.all()
-        # await ctx.send(f"Edgewood ID: {ctx.guild}, @", allowed_mentions=mention_all, delete_after=5)
 
 class MusicCog(commands.Cog):
 
