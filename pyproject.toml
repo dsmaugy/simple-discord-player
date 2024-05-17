@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "simple-discord-player"
+name = "bot"
 version = "0.1.0"
 description = ""
 authors = ["Darwin Do <darwin78913@gmail.com>"]
