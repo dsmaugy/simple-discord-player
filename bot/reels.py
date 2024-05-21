@@ -1,8 +1,7 @@
 
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from threading import Timer
 
 from discord.mentions import AllowedMentions
@@ -18,10 +17,15 @@ if TYPE_CHECKING:
     from discord.abc import MessageableChannel
     from typing import Dict
 
-MEAN_LOW = 3600 * 24 * 1 # daily limit
-MEAN_HIGH = 3600 * 24 * 7 # weekly high limit
-DEFAULT_MEAN = 3600 * 24 * 5
-DEFAULT_STD = 3600 * 24 # one day standard deviation
+MEAN_LOW = 1 # daily limit
+MEAN_HIGH = 7 # weekly high limit
+DEFAULT_MEAN = 5
+DEFAULT_STD = 1 # one day standard deviation
+
+HOUR_MEAN = 17 # 5pm mu
+HOUR_STD = 2 # 2 hour standard deviation
+
+EASTERN_TIME = timezone(timedelta(hours=-4))
 
 class ReelsManager:
     
@@ -79,12 +83,17 @@ class ReelsManager:
 
     def _trigger_send_timer(self, reels_id: str, loop=None, now=False):
         reel: Reels = self.reels_list[reels_id]
+        current_dt = datetime.now(EASTERN_TIME)
         if now:
             new_timeout = 0
         else:
-            new_timeout = random.gauss(reel.timeout_mean, reel.timeout_std)
+            next_day = random.gauss(reel.timeout_mean, reel.timeout_std)
+            hour = int(random.gauss(HOUR_MEAN, HOUR_STD))
+            minute = random.randint(0, 59)
+            trigger_date = (current_dt + timedelta(days=next_day)).replace(hour=hour, minute=minute)
+            new_timeout = (trigger_date - current_dt).total_seconds()
 
-        reel.last_reel = datetime.now()
+        reel.last_reel = current_dt
         logger.info(f"Next reel for {reels_id} is at {reel.last_reel + timedelta(seconds=new_timeout)}")
         loop = asyncio.get_event_loop() if loop is None else loop
         t = Timer(new_timeout, self.send_reel, kwargs={'reels_id': reels_id, 'loop': loop})
