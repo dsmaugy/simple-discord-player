@@ -56,7 +56,7 @@ uritemplate = "4.1.1"
 urllib3 = "1.26.7"
 websockets = "10.4"
 yarl = "1.7.2"
-yt-dlp = "2023.7.6"
+yt-dlp = "^2025.1.15"
 
 
 [build-system]
