@@ -1,15 +1,10 @@
-FROM python:3.10-bullseye
-
-ENV DEBIAN_FRONTEND=noninteractive
+FROM ghcr.io/astral-sh/uv:python3.10-alpine
 
 WORKDIR /usr/src/skeletonlistener
 
-COPY pyproject.toml ./
-COPY README.md ./
-COPY bot ./bot
+RUN apk add ffmpeg py3-cffi curl git gcc musl-dev libffi-dev
 
-RUN pip3 install .
+COPY . .
+RUN uv pip install --system .
 
-RUN apt-get update && apt-get install -y libffi-dev ffmpeg curl && rm -rf /var/lib/apt/lists/*
-
-CMD [ "python3", "run.py" ]
+CMD [ "python", "run.py" ]
