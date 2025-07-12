@@ -18,7 +18,7 @@ dependencies = [
     "chardet==4.0.0",
     "charset-normalizer==2.0.9",
     "dataclasses-json==0.5.6",
-    "discord-py==2.2.2",
+    "discord-py>=2.6.0",
     "google-api-core==2.3.2",
     "google-api-python-client==2.33.0",
     "google-auth==2.3.3",
@@ -39,7 +39,7 @@ dependencies = [
     "pyasn1-modules==0.2.8",
     "pycparser==2.21",
     "pycryptodomex==3.17",
-    "pynacl==1.4.0",
+    "pynacl==1.5.0",
     "pyparsing==3.0.6",
     "python-dotenv==0.19.2",
     "python-youtube==0.8.1",
@@ -61,3 +61,6 @@ dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+discord-py = { git = "https://github.com/Rapptz/discord.py.git" }

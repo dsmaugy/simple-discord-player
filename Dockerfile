@@ -12,4 +12,4 @@ RUN pip3 install .
 
 RUN apt-get update && apt-get install -y libffi-dev ffmpeg curl && rm -rf /var/lib/apt/lists/*
 
-CMD [ "python3", "bot/run.py" ]
+CMD [ "python3", "run.py" ]
