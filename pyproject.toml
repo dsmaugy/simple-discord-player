@@ -3,7 +3,7 @@ name = "bot"
 version = "0.1.0"
 description = ""
 authors = [{ name = "Darwin Do", email = "darwin78913@gmail.com" }]
-requires-python = "~=3.10"
+requires-python = ">3.10,<=3.11"
 readme = "README.md"
 dependencies = [
     "aiohttp==3.7.4.post0",
