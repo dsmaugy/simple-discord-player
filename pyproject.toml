@@ -56,6 +56,7 @@ dependencies = [
     "websockets==10.4",
     "yarl==1.7.2",
     "yt-dlp>=2026.2.4",
+    "dave-py>=0.1.2",
 ]
 
 [build-system]
