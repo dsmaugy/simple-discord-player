@@ -73,6 +73,7 @@ dependencies = [
     { name = "idna" },
     { name = "idna-ssl" },
     { name = "isodate" },
+    { name = "libnacl" },
     { name = "marshmallow" },
     { name = "marshmallow-enum" },
     { name = "multidict" },
@@ -127,6 +128,7 @@ requires-dist = [
     { name = "idna", specifier = "==3.3" },
     { name = "idna-ssl", specifier = "==1.1.0" },
     { name = "isodate", specifier = "==0.6.1" },
+    { name = "libnacl", specifier = ">=2.1.0" },
     { name = "marshmallow", specifier = "==3.14.1" },
     { name = "marshmallow-enum", specifier = "==1.5.1" },
     { name = "multidict", specifier = "==5.2.0" },
@@ -444,6 +446,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/db/7a/c0a56c7d56c7fa723988f122fa1f1ccf8c5c4ccc48efad0d214b49e5b1af/isodate-0.6.1.tar.gz", hash = "sha256:48c5881de7e8b0a0d648cb024c8062dc84e7b840ed81e864c7614fd3c127bde9", size = 28443, upload-time = "2021-12-13T20:28:31.525Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b6/85/7882d311924cbcfc70b1890780763e36ff0b140c7e51c110fc59a532f087/isodate-0.6.1-py2.py3-none-any.whl", hash = "sha256:0751eece944162659049d35f4f549ed815792b38793f07cf73381c1c87cbed96", size = 41722, upload-time = "2021-12-13T20:28:29.073Z" },
+]
+
+[[package]]
+name = "libnacl"
+version = "2.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/df/fc/65daa1a3fd7dd939133c30c6d393ea47e32317d2195619923b67daa29d60/libnacl-2.1.0.tar.gz", hash = "sha256:f3418da7df29e6d9b11fd7d990289d16397dc1020e4e35192e11aee826922860", size = 42189, upload-time = "2023-08-06T21:23:56.86Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ad/ce/85fa0276de7303b44fef63e07c14d618b8630bbe41c7dd7e34db246eab8d/libnacl-2.1.0-py3-none-any.whl", hash = "sha256:a8546b221afe8b72b6a9f298cd92a4c1f90570d7b5baa295acb1913644e230a5", size = 21870, upload-time = "2023-08-06T21:23:55.12Z" },
 ]
 
 [[package]]
